@@ -1,0 +1,113 @@
+/* Base styling for body */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to right, #74ebd5, #acb6e5);
+}
+
+/* Container with shadow and hover effect */
+.container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 90%;
+    max-width: 450px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Title with decorative underline */
+h1 {
+    color: #34495e;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    position: relative;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    width: 50%;
+    height: 4px;
+    background: #3498db;
+    left: 50%;
+    bottom: -8px;
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+
+/* Dropdown styling */
+select {
+    width: 100%;
+    padding: 15px;
+    font-size: 1rem;
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    background: linear-gradient(to right, #ffffff, #e3f2fd);
+    color: #34495e;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+select:focus {
+    border-color: #2980b9;
+    box-shadow: 0 0 10px rgba(41, 128, 185, 0.5);
+}
+
+/* Button styling with gradients and hover effects */
+button {
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(to right, #3498db, #2980b9);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+    background: linear-gradient(to right, #2980b9, #1c639c);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+button:disabled {
+    background: #bdc3c7;
+    color: #ecf0f1;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Responsive styling for smaller devices */
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    select, button {
+        font-size: 0.9rem;
+    }
+}
