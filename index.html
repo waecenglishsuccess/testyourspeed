@@ -3,20 +3,999 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Speed Test Topic Selector</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>English Quiz Speed Test</title>
+    <style>
+        :root {
+            --primary-color: #6a1b9a;
+            --secondary-color: #4a148c;
+            --accent-color: #e74c3c;
+            --light-color: #f3e5f5;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .quiz-intro {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .topic-selection {
+            margin: 20px 0;
+        }
+
+        .topic-selector {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            font-size: 16px;
+            color: var(--dark-color);
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .start-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .start-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .start-btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .quiz-container {
+            display: none;
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .question-count, .score {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .timer-container {
+            width: 100%;
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background-color: var(--accent-color);
+            transition: width 0.1s linear;
+        }
+
+        .question {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            background-color: var(--light-color);
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option:hover {
+            background-color: #e3e8ec;
+            border-color: var(--primary-color);
+        }
+
+        .option.correct {
+            background-color: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        .option.incorrect {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .option.disabled {
+            pointer-events: none;
+        }
+
+        .results {
+            display: none;
+            text-align: center;
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .results h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .score-display {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .restart-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .restart-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .upgrade-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .upgrade-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .upgrade-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .close-upgrade {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Styling for disabled topics */
+        option.disabled {
+            color: #bdc3c7;
+            font-style: italic;
+        }
+
+        @media (min-width: 768px) {
+            .options {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>English Speed Test</h1>
-        <select id="topicSelect">
-            <option value="">Select a Topic</option>
-            <option value="https://testyourspeed.github.io/grammar/">Grammar</option>
-            <option value="https://testyourspeed.github.io/literature/">Literature</option>
-            <option value="https://testyourspeed.github.io/creativewriting/">Creative Writing</option>
-        </select>
-        <button id="goButton" disabled>Go to Test</button>
+        <header>
+            <h1>English Quiz Speed Test</h1>
+            <p>Test your English knowledge with quick-fire questions!</p>
+        </header>
+
+        <div class="quiz-intro">
+            <h2>Ready to test your English skills?</h2>
+            <p>Select a topic and answer 10 random questions. You have 20 seconds for each question!</p>
+            
+            <div class="topic-selection">
+                <label for="topic">Select Topic:</label>
+                <select id="topic" class="topic-selector">
+                    <option value="" disabled selected>Choose a topic...</option>
+                    <option value="grammar">Grammar</option>
+                    <option value="vocabulary">Vocabulary</option>
+                    <option value="comprehension">Comprehension</option>
+                    <option value="literature" disabled>Literature</option>
+                    <option value="writing" disabled>Writing</option>
+                    <option value="speaking" disabled>Speaking</option>
+                    <option value="idioms" disabled>Idioms & Phrases</option>
+                </select>
+            </div>
+            
+            <button id="start-btn" class="start-btn" disabled>Start Quiz</button>
+        </div>
+
+        <div id="quiz-container" class="quiz-container">
+            <div class="quiz-header">
+                <div class="question-count">Question <span id="current">1</span>/<span id="total">10</span></div>
+                <div class="score">Score: <span id="score">0</span></div>
+            </div>
+            
+            <div class="timer-container">
+                <div id="timer-bar" class="timer-bar"></div>
+            </div>
+            
+            <div id="question" class="question"></div>
+            
+            <div id="options" class="options"></div>
+        </div>
+
+        <div id="results" class="results">
+            <h2>Quiz Complete!</h2>
+            <div class="score-display">Your score: <span id="final-score">0</span> out of 10</div>
+            <button id="restart-btn" class="restart-btn">Take Another Quiz</button>
+        </div>
     </div>
-    <script src="script.js"></script>
+
+    <div id="upgrade-modal" class="upgrade-modal">
+        <div class="upgrade-content">
+            <h2>UPGRADE TO PRO</h2>
+            <p>This topic is only available in the PRO version.</p>
+            <button id="close-upgrade" class="close-upgrade">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const topicSelector = document.getElementById('topic');
+        const startButton = document.getElementById('start-btn');
+        const quizContainer = document.getElementById('quiz-container');
+        const quizIntro = document.querySelector('.quiz-intro');
+        const questionElement = document.getElementById('question');
+        const optionsContainer = document.getElementById('options');
+        const currentQuestionElement = document.getElementById('current');
+        const totalQuestionsElement = document.getElementById('total');
+        const scoreElement = document.getElementById('score');
+        const timerBar = document.getElementById('timer-bar');
+        const resultsContainer = document.getElementById('results');
+        const finalScoreElement = document.getElementById('final-score');
+        const restartButton = document.getElementById('restart-btn');
+        const upgradeModal = document.getElementById('upgrade-modal');
+        const closeUpgradeButton = document.getElementById('close-upgrade');
+
+        // Quiz state
+        let currentQuestion = 0;
+        let score = 0;
+        let timer;
+        let timeLeft;
+        let questions = [];
+        let answered = false;
+
+        // Question Banks
+        const questionBanks = {
+            grammar: [
+                {
+                    question: "Which sentence contains a verb in the past perfect tense?",
+                    options: [
+                        "I will go to the store.",
+                        "She has been working here for years.",
+                        "They had finished the project before the deadline.",
+                        "We are studying for the exam."
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Which of the following is a proper noun?",
+                    options: [
+                        "happiness",
+                        "London",
+                        "building",
+                        "intelligence"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "What is the plural form of 'child'?",
+                    options: [
+                        "childs",
+                        "childen",
+                        "children",
+                        "childrens"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Which sentence contains a split infinitive?",
+                    options: [
+                        "She quickly ran to the store.",
+                        "They want to carefully examine the evidence.",
+                        "He speaks English fluently.",
+                        "The dog barked loudly at the mailman."
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Which of these is a coordinating conjunction?",
+                    options: [
+                        "however",
+                        "because",
+                        "but",
+                        "although"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Which sentence uses the correct form of the pronoun?",
+                    options: [
+                        "Her and I went to the movie.",
+                        "The teacher gave the books to John and I.",
+                        "Between you and I, this is a secret.",
+                        "She invited my friend and me to dinner."
+                    ],
+                    answer: 3
+                },
+                {
+                    question: "Which of these words is an adverb?",
+                    options: [
+                        "quick",
+                        "slowly",
+                        "happy",
+                        "beautiful"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Which sentence contains a subject-verb agreement error?",
+                    options: [
+                        "The team is practicing today.",
+                        "She doesn't like chocolate.",
+                        "The group of students were late.",
+                        "My brother and sister are coming to visit."
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "What is the possessive form of 'women'?",
+                    options: [
+                        "womens",
+                        "womens'",
+                        "women's",
+                        "womans'"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Which sentence is written in the passive voice?",
+                    options: [
+                        "Tom wrote the essay yesterday.",
+                        "The cat chased the mouse.",
+                        "The essay was written by Tom yesterday.",
+                        "She sings beautifully."
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Which of these words is a preposition?",
+                    options: [
+                        "quickly",
+                        "jumping",
+                        "beneath",
+                        "organize"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Which sentence contains a dependent clause?",
+                    options: [
+                        "The sun is shining.",
+                        "She walked to the store.",
+                        "When it rains, the streets get wet.",
+                        "They enjoy hiking."
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "What type of pronoun is 'themselves'?",
+                    options: [
+                        "personal",
+                        "possessive",
+                        "reflexive",
+                        "relative"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Which sentence contains a dangling modifier?",
+                    options: [
+                        "Walking to school, my backpack felt heavy.",
+                        "She saw a bird flying in the sky.",
+                        "The teacher explained the lesson clearly.",
+                        "They were talking while eating dinner."
+                    ],
+                    answer: 0
+                },
+                {
+                    question: "Which of these is an example of a compound sentence?",
+                    options: [
+                        "The tall, dark-haired man walked into the room.",
+                        "After finishing her homework, she went to bed.",
+                        "It was raining, so we stayed inside.",
+                        "Running through the park, she felt free."
+                    ],
+                    answer: 2
+                }
+            ],
+            vocabulary: [
+                {
+                    question: "What is the meaning of 'ubiquitous'?",
+                    options: [
+                        "rare",
+                        "present everywhere",
+                        "unclear",
+                        "unnecessary"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Which word is a synonym for 'benevolent'?",
+                    options: [
+                        "kind",
+                        "angry",
+                        "foolish",
+                        "suspicious"
+                    ],
+                    answer: 0
+                },
+                {
+                    question: "What is the antonym of 'frugal'?",
+                    options: [
+                        "careful",
+                        "stingy",
+                        "wasteful",
+                        "economical"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "What does the word 'paradox' mean?",
+                    options: [
+                        "a solution to a problem",
+                        "a statement that contradicts itself but might be true",
+                        "a fixed belief",
+                        "a formal argument"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Which word means 'to make amends or reparation'?",
+                    options: [
+                        "atone",
+                        "discern",
+                        "recede",
+                        "commence"
+                    ],
+                    answer: 0
+                },
+                {
+                    question: "What is the meaning of 'ephemeral'?",
+                    options: [
+                        "lasting forever",
+                        "short-lived",
+                        "important",
+                        "unnecessary"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Which word is closest in meaning to 'dogmatic'?",
+                    options: [
+                        "realistic",
+                        "flexible",
+                        "opinionated",
+                        "logical"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "What does 'meticulous' mean?",
+                    options: [
+                        "careless",
+                        "showing great attention to detail",
+                        "quick and efficient",
+                        "easily frightened"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Which word is an antonym for 'verbose'?",
+                    options: [
+                        "talkative",
+                        "concise",
+                        "eloquent",
+                        "detailed"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "What is the definition of 'ambivalent'?",
+                    options: [
+                        "having mixed feelings",
+                        "extremely certain",
+                        "highly motivated",
+                        "entirely negative"
+                    ],
+                    answer: 0
+                },
+                {
+                    question: "Which word means 'a speech in praise of someone'?",
+                    options: [
+                        "diatribe",
+                        "monologue",
+                        "eulogy",
+                        "soliloquy"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "What does the word 'placate' mean?",
+                    options: [
+                        "to anger someone",
+                        "to make someone less angry",
+                        "to relocate something",
+                        "to celebrate"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Which word is a synonym for 'taciturn'?",
+                    options: [
+                        "loud",
+                        "friendly",
+                        "reserved",
+                        "intelligent"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "What does 'sycophant' mean?",
+                    options: [
+                        "a person who criticizes everything",
+                        "a person who flatters powerful people",
+                        "a literary genius",
+                        "a medical specialist"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Which word means 'to officially renounce a throne'?",
+                    options: [
+                        "abdicate",
+                        "advocate",
+                        "admonish",
+                        "abscond"
+                    ],
+                    answer: 0
+                }
+            ],
+            comprehension: [
+                {
+                    question: "Read the passage: 'The city council voted to increase funding for public transportation by 15% over the next fiscal year. This will allow for extended service hours and new bus routes to underserved areas.' What is the main idea of this passage?",
+                    options: [
+                        "Public transportation is expensive.",
+                        "The city council is increasing taxes.",
+                        "More funding will improve public transportation services.",
+                        "Underserved areas lack adequate transportation."
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Read the passage: 'Although many people think bats are blind, most species actually have well-developed eyesight. They use echolocation primarily to navigate in the dark and to find food.' What misconception does this passage address?",
+                    options: [
+                        "That bats can fly",
+                        "That bats are blind",
+                        "That bats use echolocation",
+                        "That bats are nocturnal"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Read the passage: 'Despite the rain, Sarah decided to go for a run. She had been training for months and couldn't afford to miss a day so close to the marathon.' Why did Sarah go running?",
+                    options: [
+                        "She enjoys running in the rain.",
+                        "She is training for a marathon.",
+                        "She wanted to get wet.",
+                        "She had nothing else to do."
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Read the passage: 'The new restaurant combines elements of traditional Italian cuisine with modern cooking techniques. The chef, who trained in Naples, uses locally-sourced ingredients to create innovative dishes.' What type of restaurant is being described?",
+                    options: [
+                        "A traditional Italian restaurant",
+                        "A modern American restaurant",
+                        "A fusion Italian restaurant",
+                        "A farm-to-table restaurant"
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Read the passage: 'The deadline for the project was Friday, but the team completed their work on Wednesday. This allowed them time to review everything before submission.' When was the work completed?",
+                    options: [
+                        "Before the deadline",
+                        "On the deadline",
+                        "After the deadline",
+                        "The passage doesn't say"
+                    ],
+                    answer: 0
+                },
+                {
+                    question: "Read the passage: 'While some studies suggest that moderate coffee consumption may have health benefits, excessive intake can lead to insomnia, anxiety, and digestive issues.' According to the passage, what is true about coffee?",
+                    options: [
+                        "It always improves health.",
+                        "It always causes health problems.",
+                        "It may be beneficial in moderation but harmful in excess.",
+                        "It causes insomnia in everyone."
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Read the passage: 'The museum will be closed for renovations from August 15th to September 30th. During this time, select exhibits will be displayed at the city library.' Where can people view some exhibits during the renovation period?",
+                    options: [
+                        "At the museum",
+                        "At the city library",
+                        "Online only",
+                        "They cannot be viewed"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Read the passage: 'The endangered species' population has increased by 20% since conservation efforts began five years ago. However, experts warn that continued habitat protection is necessary for long-term survival.' What has happened to the endangered species?",
+                    options: [
+                        "It has become extinct.",
+                        "Its population has decreased.",
+                        "Its population has increased.",
+                        "Its habitat has been destroyed."
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Read the passage: 'Although it was once believed that dinosaurs were cold-blooded reptiles, recent evidence suggests that some species may have been warm-blooded, similar to modern birds.' What is the main point of this passage?",
+                    options: [
+                        "Dinosaurs were definitely cold-blooded.",
+                        "Scientific understanding of dinosaurs has changed.",
+                        "All dinosaurs were actually birds.",
+                        "Modern birds are cold-blooded."
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Read the passage: 'The store is having a sale: buy one shirt and get the second at half price. Additionally, customers who spend over $100 receive a $20 gift card for their next purchase.' What promotion is the store offering?",
+                    options: [
+                        "All shirts are half price.",
+                        "Buy one shirt, get one free.",
+                        "Buy one shirt, get the second at half price, plus a gift card for large purchases.",
+                        "Spend $100 and get all shirts half price."
+                    ],
+                    answer: 2
+                },
+                {
+                    question: "Read the passage: 'The concert will begin at 8:00 PM. Doors open at 7:00 PM, and seating is first-come, first-served. No photography or recording devices are permitted during the performance.' When should attendees arrive if they want good seats?",
+                    options: [
+                        "At 8:00 PM",
+                        "Early, close to 7:00 PM",
+                        "Any time is fine as seats are assigned",
+                        "The passage doesn't address this"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Read the passage: 'The recipe calls for 2 cups of flour, 1 cup of sugar, and 3 eggs. For a larger batch, simply double all ingredients.' How many eggs would be needed for a larger batch?",
+                    options: [
+                        "3 eggs",
+                        "6 eggs",
+                        "9 eggs",
+                        "12 eggs"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Read the passage: 'Despite having lived in the city for only three months, Emma knew the subway system better than her roommate who had lived there for years.' Who knows the subway system better?",
+                    options: [
+                        "Emma",
+                        "Emma's roommate",
+                        "They both know it equally well",
+                        "The passage doesn't say"
+                    ],
+                    answer: 0
+                },
+                {
+                    question: "Read the passage: 'The new policy will take effect on January 1st. Employees must submit their updated information by December 15th to ensure a smooth transition.' When is the deadline for submitting updated information?",
+                    options: [
+                        "January 1st",
+                        "December 15th",
+                        "December 31st",
+                        "There is no deadline"
+                    ],
+                    answer: 1
+                },
+                {
+                    question: "Read the passage: 'Although they appear similar, dolphins and sharks belong to different animal classifications. Dolphins are mammals that breathe air, while sharks are fish with gills.' What is the main difference between dolphins and sharks according to the passage?",
+                    options: [
+                        "Their appearance",
+                        "Their size",
+                        "Their biological classification",
+                        "Their habitat"
+                    ],
+                    answer: 2
+                }
+            ]
+        };
+
+        // Event Listeners
+        topicSelector.addEventListener('change', handleTopicSelection);
+        startButton.addEventListener('click', startQuiz);
+        restartButton.addEventListener('click', restartQuiz);
+        closeUpgradeButton.addEventListener('click', closeUpgradeModal);
+
+        // Disable non-clickable options
+        const disabledOptions = Array.from(topicSelector.options).filter(option => option.disabled);
+        disabledOptions.forEach(option => {
+            option.classList.add('disabled');
+            option.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                if (this.value && this.disabled) {
+                    showUpgradeModal();
+                }
+                return false;
+            });
+        });
+
+        // Functions
+        function handleTopicSelection() {
+            if (topicSelector.value) {
+                startButton.disabled = false;
+            } else {
+                startButton.disabled = true;
+            }
+        }
+
+        function showUpgradeModal() {
+            upgradeModal.style.display = 'flex';
+        }
+
+        function closeUpgradeModal() {
+            upgradeModal.style.display = 'none';
+        }
+
+        function startQuiz() {
+            // Reset quiz state
+            currentQuestion = 0;
+            score = 0;
+            scoreElement.textContent = '0';
+            
+            // Get selected topic
+            const topic = topicSelector.value;
+            
+            // Select 10 random questions from the topic
+            const allQuestions = questionBanks[topic];
+            questions = getRandomQuestions(allQuestions, 10);
+            
+            // Hide intro, show quiz
+            quizIntro.style.display = 'none';
+            quizContainer.style.display = 'block';
+            resultsContainer.style.display = 'none';
+            
+            // Load first question
+            loadQuestion(currentQuestion);
+        }
+
+        function getRandomQuestions(questions, count) {
+            const shuffled = [...questions].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        function loadQuestion(index) {
+            if (index >= questions.length) {
+                showResults();
+                return;
+            }
+            
+            answered = false;
+            const question = questions[index];
+            
+            // Update question counter
+            currentQuestionElement.textContent = index + 1;
+            totalQuestionsElement.textContent = questions.length;
+            
+            // Display question
+            questionElement.textContent = question.question;
+            
+            // Clear previous options
+            optionsContainer.innerHTML = '';
+            
+            // Add options
+            question.options.forEach((option, i) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.textContent = option;
+                optionElement.dataset.index = i;
+                optionElement.addEventListener('click', checkAnswer);
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Start timer
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = 20;
+            timerBar.style.width = '100%';
+            
+            timer = setInterval(() => {
+                timeLeft -= 0.1;
+                const percentage = (timeLeft / 20) * 100;
+                timerBar.style.width = `${percentage}%`;
+                
+                // Color changes based on time left
+                if (percentage < 30) {
+                    timerBar.style.backgroundColor = '#e74c3c'; // Red when time is running out
+                } else if (percentage < 60) {
+                    timerBar.style.backgroundColor = '#f39c12'; // Orange when at medium
+                } else {
+                    timerBar.style.backgroundColor = '#2ecc71'; // Green when plenty of time
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (!answered) {
+                        // Time's up - show correct answer
+                        const correctIndex = questions[currentQuestion].answer;
+                        const options = document.querySelectorAll('.option');
+                        options.forEach(option => {
+                            const optionIndex = parseInt(option.dataset.index);
+                            if (optionIndex === correctIndex) {
+                                option.classList.add('correct');
+                            }
+                            option.classList.add('disabled');
+                        });
+                        
+                        // Move to next question after delay
+                        setTimeout(() => {
+                            currentQuestion++;
+                            loadQuestion(currentQuestion);
+                        }, 1500);
+                    }
+                }
+            }, 100);
+        }
+
+        function checkAnswer(e) {
+            if (answered) return;
+            
+            answered = true;
+            clearInterval(timer);
+            
+            const selectedOption = e.target;
+            const selectedIndex = parseInt(selectedOption.dataset.index);
+            const correctIndex = questions[currentQuestion].answer;
+            
+            // Disable all options
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.classList.add('disabled');
+            });
+            
+            // Check if answer is correct
+            if (selectedIndex === correctIndex) {
+                selectedOption.classList.add('correct');
+                score++;
+                scoreElement.textContent = score;
+            } else {
+                selectedOption.classList.add('incorrect');
+                // Show correct answer
+                options[correctIndex].classList.add('correct');
+            }
+            
+            // Move to next question after delay
+            setTimeout(() => {
+                currentQuestion++;
+                loadQuestion(currentQuestion);
+            }, 1500);
+        }
+
+        function showResults() {
+            quizContainer.style.display = 'none';
+            resultsContainer.style.display = 'block';
+            finalScoreElement.textContent = score;
+        }
+
+        function restartQuiz() {
+            resultsContainer.style.display = 'none';
+            quizIntro.style.display = 'block';
+            topicSelector.value = '';
+            startButton.disabled = true;
+        }
+
+        // Handle clicks on disabled dropdown options
+        topicSelector.addEventListener('mousedown', function(e) {
+            const option = e.target.closest('option');
+            if (option && option.disabled && option.value) {
+                e.preventDefault();
+                this.blur();
+                showUpgradeModal();
+                return false;
+            }
+        });
+    </script>
 </body>
 </html>
